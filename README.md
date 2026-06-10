@@ -1,4 +1,9 @@
-# coverage-guard
+<div align="center">
+ <img src="assets/coverage-guard.png" alt="Logo" width="256" height="256">
+
+# Coverage Guard
+
+ </div>
 
 An AI agent skill that enforces 100% test coverage for any JavaScript/TypeScript project. Works with Vitest, Jest, react-scripts, and other test runners. Compatible with opencode, Claude Code, Cursor, Windsurf, and GitHub Copilot.
 
