@@ -3,6 +3,9 @@
 
 # Coverage Guard
 
+ [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+ [![GitHub Stars](https://img.shields.io/github/stars/sametcelikbicak/coverage-guard?style=social)](https://github.com/sametcelikbicak/coverage-guard)
+
  </div>
 
 An AI agent skill that enforces 100% test coverage for any JavaScript/TypeScript project. Works with Vitest, Jest, react-scripts, and other test runners. Compatible with opencode, Claude Code, Cursor, Windsurf, and GitHub Copilot.
