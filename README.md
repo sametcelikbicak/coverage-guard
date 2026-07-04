@@ -22,11 +22,14 @@ An AI agent skill that enforces 100% test coverage for any JavaScript/TypeScript
 ## Install
 
 ```bash
-# opencode — copy to project
-cp -r coverage-guard .opencode/skills/
+# rolecraft — install from GitHub (recommended)
+npx rolecraft install sametcelikbicak/coverage-guard
 
 # or via agentskill.sh
 /learn @sametcelikbicak/coverage-guard
+
+# or copy manually
+cp -r coverage-guard .opencode/skills/
 ```
 
 ## Supported runners
