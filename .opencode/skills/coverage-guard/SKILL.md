@@ -79,8 +79,11 @@ If no test runner was detected in Phase 1, ask the user interactively:
   1) Vitest (Recommended — fast, modern, native ESM)
   2) Jest (Most widely used)
   3) react-scripts (Create React App)
-  4) None — skip, I'll set it up manually
+  4) Node Built-in (Zero dependencies — uses node:test + node:assert, Node 20+)
+  5) None — skip, I'll set it up manually
 ```
+
+TypeScript note for option 4: If the project is pure JS, zero dependencies needed. If TypeScript, `tsx` is required as a lightweight dev dependency (just a TS runner, not a test framework), or use Node 22+ `--experimental-strip-types`.
 
 Once the user selects, install dependencies and create config:
 
@@ -166,6 +169,47 @@ Coverage comes built-in:
 }
 ```
 
+**Node Built-in setup (pure JS — zero dependencies):**
+
+No packages to install. Add to `package.json` scripts:
+```json
+{
+  "scripts": {
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage"
+  }
+}
+```
+
+For Node 22+, `--experimental-test-coverage` is stable and can be used without the flag: check your Node version:
+```bash
+node --version  # needs 20+
+```
+
+For Node 23+, `--experimental-test-coverage` is no longer needed (coverage is built-in).
+
+**Node Built-in setup (TypeScript project — minimal dependency):**
+
+Install `tsx` (lightweight TS runner, NOT a test framework):
+```bash
+npm install -D tsx
+```
+
+Add to `package.json` scripts:
+```json
+{
+  "scripts": {
+    "test": "tsx --test",
+    "test:coverage": "tsx --test --experimental-test-coverage"
+  }
+}
+```
+
+> Alternatively, Node 22.6+ supports `--experimental-strip-types` which allows running `.ts` files directly without `tsx`:
+> ```json
+> { "scripts": { "test": "node --experimental-strip-types --test", "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage" } }
+> ```
+
 After setup, run a quick test to confirm everything works:
 ```bash
 npm test
@@ -217,6 +261,55 @@ describe('Button', () => {
 })
 ```
 
+**Node Built-in example — pure JS** (`src/utils/format.js` → `src/utils/format.test.js`):
+```js
+const { describe, it, mock } = require('node:test')
+const assert = require('node:assert/strict')
+const { formatCurrency } = require('./format')
+
+describe('formatCurrency', () => {
+  it('formats integer amount', () => {
+    assert.strictEqual(formatCurrency(1000), '$1,000.00')
+  })
+
+  it('handles zero', () => {
+    assert.strictEqual(formatCurrency(0), '$0.00')
+  })
+
+  it('handles negative values', () => {
+    assert.strictEqual(formatCurrency(-50), '-$50.00')
+  })
+})
+```
+
+For ESM (`"type": "module"` in package.json):
+```js
+import { describe, it, mock } from 'node:test'
+import assert from 'node:assert/strict'
+import { formatCurrency } from './format.js'
+```
+
+**Node Built-in example — TypeScript** (`src/utils/format.ts` → `src/utils/format.test.ts`):
+```ts
+import { describe, it, mock } from 'node:test'
+import assert from 'node:assert/strict'
+import { formatCurrency } from './format'
+
+describe('formatCurrency', () => {
+  it('formats integer amount', () => {
+    assert.strictEqual(formatCurrency(1000), '$1,000.00')
+  })
+
+  it('handles zero', () => {
+    assert.strictEqual(formatCurrency(0), '$0.00')
+  })
+
+  it('handles negative values', () => {
+    assert.strictEqual(formatCurrency(-50), '-$50.00')
+  })
+})
+```
+
 **Utility function example** (`src/utils/format.ts` → `src/utils/format.test.ts`):
 ```ts
 import { formatCurrency, truncate } from './format'
@@ -245,10 +338,13 @@ describe('formatCurrency', () => {
 Run the appropriate coverage command based on detected runner:
 
 | Runner | Command |
-|---|---|
+|---|---|---|
 | Vitest | `npx vitest --coverage --reporter=verbose` |
 | Jest | `npx jest --coverage --verbose` |
 | react-scripts | `npx react-scripts test --coverage --watchAll=false` |
+| Node Built-in (JS) | `node --test --experimental-test-coverage` |
+| Node Built-in (TS via tsx) | `tsx --test --experimental-test-coverage` |
+| Node Built-in (TS via strip-types) | `node --experimental-strip-types --test --experimental-test-coverage` |
 | Others | Use the project's configured coverage command |
 
 Parse the output to identify:
@@ -276,6 +372,7 @@ Use the detected test runner's patterns:
 - **Vitest**: `vi.mock()`, `vi.spyOn()`, `vi.fn()`
 - **Jest**: `jest.mock()`, `jest.spyOn()`, `jest.fn()`
 - **react-scripts**: Same as Jest
+- **Node Built-in**: `mock.fn()`, `mock.method()`, `mock.getter()` / `mock.setter()` (from `node:test`)
 
 ### Phase 7: Verify
 
@@ -283,8 +380,10 @@ Re-run coverage after adding/updating tests:
 
 ```bash
 # Use the detected command
-npx vitest --coverage   # for Vitest
-npx jest --coverage      # for Jest
+npx vitest --coverage                        # for Vitest
+npx jest --coverage                           # for Jest
+node --test --experimental-test-coverage      # for Node Built-in (JS)
+npx tsx --test --experimental-test-coverage   # for Node Built-in (TS via tsx)
 ```
 
 Confirm all files show 100% for statements, branches, functions, and lines.
@@ -347,9 +446,11 @@ export default {
 - If dead code is found (impossible to cover), suggest removing it or adding a coverage ignore comment:
   - Vitest/V8: `/* c8 ignore next */` or `/* c8 ignore next 3 */`
   - Jest/Istanbul: `/* istanbul ignore next */` or `/* istanbul ignore if */`
+  - Node Built-in (V8): `/* c8 ignore next */` (same as Vitest/V8 since both use V8 coverage)
 - Do NOT modify source code logic — only add or update tests
 - Follow the project's existing test patterns (file naming, folder structure, mocking style)
 - For files with 0 tests, create a comprehensive test file that hits all the major paths first, then iterate
+- **Node Built-in note**: `node:test` uses `describe`/`it` (or `test`) from the `node:test` module. Assertions use `node:assert` (`assert.strictEqual`, `assert.deepEqual`, `assert.throws`, etc.). For mocking: `mock.fn()`, `mock.method()`. No `expect` or `vi` globals. More info: https://nodejs.org/api/test.html
 
 ## Detection priority
 
