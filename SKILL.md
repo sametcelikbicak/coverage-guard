@@ -1,8 +1,9 @@
 ---
-name: coverage-guard
+name: Coverage Guard
+slug: coverage-guard
 description: "Use when the user wants to check test coverage, enforce 100% coverage, find uncovered code, add missing tests, or increase code coverage. Works with vitest, jest, react-scripts, and other test runners. Also for 'coverage', 'test coverage', 'cover', 'untested', 'uncovered', 'add tests for', 'increase coverage', 'coverage report', 'write tests', 'test all files'."
 license: MIT
-compatibility: opencode, claude-code, cursor, windsurf, github-copilot
+compatibility: opencode, claude-code, cursor, windsurf, copilot
 metadata:
   category: testing
   audience: developers
