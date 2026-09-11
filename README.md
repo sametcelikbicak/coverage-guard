@@ -7,9 +7,7 @@
  [![GitHub Stars](https://img.shields.io/github/stars/sametcelikbicak/coverage-guard?style=social)](https://github.com/sametcelikbicak/coverage-guard)
 
    </div>
-
-> **⚠️ Moved to [`rolecraft-sh/skills`](https://github.com/rolecraft-sh/skills/tree/main/skills/coverage-guard)** — install via `npx rolecraft install coverage-guard`
-
+   
 An AI agent skill that enforces 100% test coverage for any JavaScript/TypeScript project. Works with Vitest, Jest, react-scripts, and other test runners. Compatible with opencode, Claude Code, Cursor, Windsurf, and GitHub Copilot.
 
 ## What it does
